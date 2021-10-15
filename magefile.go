@@ -4,8 +4,11 @@
 package main
 
 import (
-    "path/filepath"
-
+    "io"
+	"net/http"
+	"os"
+	"path/filepath"
+	
 	"github.com/magefile/mage/mg"
 	"github.com/magefile/mage/sh"	
 )
@@ -28,10 +31,21 @@ func Download() error {
 	mg.Deps(Build)
 
 	url := "https://gist.githubusercontent.com/phillipsj/07fed8ce06f932c19ab7613d8426d922/raw/13d3fc0ca54d136ad5744fd4448b65dbc87f32dc/random.txt"
-	url := "https://gist.githubusercontent.com/phillipsj/07fed8ce06f932c19ab7613d8426d922/raw/13d3fc0ca54d136ad5744fd4448b65dbc87f32dc/random.txt"
-	err := sh.Run("curl", "-O", url)
+	out, err := os.Create(filepath.Join("bin", "random.txt"))
 	if err != nil {
 		return err
 	}
-	return sh.Copy(filepath.Join("bin", "random.txt"), "random.txt")
+	defer out.Close()
+
+	resp, err := http.Get(url)
+	if err != nil {
+		return err
+	}
+	defer resp.Body.Close()
+
+	if _, err := io.Copy(out, resp.Body); err != nil {
+		return err
+	}
+
+	return nil
 }
