@@ -4,13 +4,13 @@
 package main
 
 import (
-    "io"
+	"io"
 	"net/http"
 	"os"
 	"path/filepath"
-	
+
 	"github.com/magefile/mage/mg"
-	"github.com/magefile/mage/sh"	
+	"github.com/magefile/mage/sh"
 )
 
 var Default = Build
@@ -31,7 +31,11 @@ func Download() error {
 	mg.Deps(Build)
 
 	url := "https://gist.githubusercontent.com/phillipsj/07fed8ce06f932c19ab7613d8426d922/raw/13d3fc0ca54d136ad5744fd4448b65dbc87f32dc/random.txt"
-	out, err := os.Create(filepath.Join("bin", "random.txt"))
+	return GetFile(url, filepath.Join("bin", "random.txt"))
+}
+
+func GetFile(url string, file string) error {
+	out, err := os.Create(file)
 	if err != nil {
 		return err
 	}
