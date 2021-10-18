@@ -8,6 +8,7 @@ import (
 
 	"github.com/magefile/mage/mg"
 	"github.com/magefile/mage/sh"
+	mageextras "github.com/mcandre/mage-extras"
 	"github.com/phillipsj/mage-helpers/dl"
 )
 
@@ -19,10 +20,11 @@ func Clean() error {
 
 func Build() error {
 	mg.Deps(Clean)
-	if err := sh.Run("go", "mod", "download"); err != nil {
-		return err
-	}
-	return sh.Run("go", "build", "-o", "./bin/")
+	return mageextras.Compile("-o", "./bin/")
+}
+
+func Test() error {
+	return mageextras.UnitTest()
 }
 
 func Download() error {
